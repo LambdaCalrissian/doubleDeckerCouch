@@ -1,0 +1,46 @@
+:host {
+    background-color: #e04038;
+}
+
+h1 {
+	color: #111;
+	font-family: 'Source Sans Pro';
+	font-size: 80px;
+	font-weight: 900;
+	letter-spacing: -0.03em;
+    padding-bottom: 0px;
+}
+
+h1:before {
+	background: #111;
+	content: '';
+	display: block;
+	height: 24px;
+	width: 64px;
+}
+
+p {
+	color: #fff;
+	text-align: center;
+	font-family: 'Source Sans Pro';
+	font-size: 38px;
+	font-weight: 700;
+	line-height: 48px;
+	letter-spacing: -0.02em;
+}
+
+a {
+	color: #fff;
+	font-family: 'Source Sans Pro';
+	font-weight: 700;
+	text-decoration: none;
+}
+
+a.active {
+	border-bottom: 4px solid #fff;
+}
+
+a:hover {
+	border-bottom: 4px solid #111;
+	color: #111;
+}

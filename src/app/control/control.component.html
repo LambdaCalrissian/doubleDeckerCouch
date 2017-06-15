@@ -1,0 +1,13 @@
+<div fxLayout="column" fxLayoutAlign="center center">
+  <div class="control" (click)="onClickPlay()">{{playState}}</div>
+  <div fxLayout="row wrap" fxLayoutAlign="center center">
+    <div class="control" (click)="onSkipForward()">=> 30</div>
+    <div class="control" (click)="onSkipBackward()"> <= 10</div>
+  </div>
+  <div fxLayout="row wrap" fxLayoutAlign="center center">
+    <div *ngFor="let sound of sounds; let i = index" class="control" (click)="onSelectSound(sound, i)">
+      {{sound}}
+    </div>
+  </div>
+  <iframe src="https://discordapp.com/widget?id=324076161237909506&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0"></iframe>
+</div>
