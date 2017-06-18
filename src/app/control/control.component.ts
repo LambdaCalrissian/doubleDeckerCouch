@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import * as io from 'socket.io-client';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 
 import { Signal } from '../../../server/signal';
 
@@ -12,16 +11,23 @@ import { SoundService } from '../sound.service';
   styleUrls: ['./control.component.css']
 })
 export class ControlComponent implements OnInit, OnDestroy {
+  private _video: HTMLVideoElement;
+  @Input()
+  set video(video: HTMLVideoElement) {
+    this._video = video;
+  }
+  get video(): HTMLVideoElement {
+    return this._video;
+  }
+
   connection;
   sounds: string[];
-  playState;
+  playState = 'paused';
 
   constructor(
     private websocketService: WebsocketService,
     private soundService: SoundService
   ) {
-    this.playState = 'paused';
-    this.sounds = [];
   }
 
   ngOnInit() {
@@ -36,14 +42,28 @@ export class ControlComponent implements OnInit, OnDestroy {
   }
 
   handleSignal(signal: Signal) {
-    console.log('received signal: ' + signal.type);
+    console.log('received signal:\n\t' + JSON.stringify(signal));
     if (signal.type === 'play') {
-      this.playState = signal.data;
+      this.playState = signal.data.state;
+    } else if (signal.type === 'ping') {
+      this.websocketService.sendSignal(new Signal('pong', signal.data));
     }
   }
 
+  isMuted(): boolean {
+    return this.video.muted;
+  }
+
+  onMuteToggle(): void {
+    this.video.muted = !this.video.muted;
+  }
+
   onClickPlay() {
-    this.websocketService.sendSignal(new Signal('play', ''));
+    let time;
+    if (this._video) {
+      time = this._video.currentTime;
+    }
+    this.websocketService.sendSignal(new Signal('play', time));
   }
 
   onSelectSound(sound, index) {

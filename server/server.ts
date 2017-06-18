@@ -20,6 +20,8 @@ app.use(morgan('tiny'));
 app.use(express.static(path.join(__dirname, '../dist')));
 app.use(express.static(path.join(__dirname, '../assets')));
 
+console.log(__dirname);
+
 function loadSounds() {
     fs.readdir(path.join(__dirname, '../assets/sounds'), (err, files) => {
         if (err) {
@@ -48,109 +50,45 @@ server.listen(port, () => console.log(`API running on localhost:${port}`));
 const io = sockets(server);
 
 let playState = 'paused';
+const pingMap = new Map();
 
 io.on('connection', (socket) => {
-    socket.emit('signal', new Signal('play', playState));
-    socket.on('signal', (ev: Signal) => {
-        console.log('socket received signal: ' + ev.type);
+    // Every time someone connects, recheck everyone's ping
+    console.log('connected:\n\t' + socket.id);
+    // emitPing();
+    socket.emit('signal', new Signal('play', { state: playState }));
 
-        if (ev.type === 'play') {
+    socket.on('signal', (signal: Signal) => {
+        console.log('socket received signal:\n\t' + JSON.stringify(signal));
+
+        if (signal.type === 'play') {
+            const time = signal.data;
             if (playState === 'paused') {
                 playState = 'playing';
             } else {
                 playState = 'paused';
             }
-            ev.data = playState;
+            signal.data = { state: playState, time: time };
+        } else if (signal.type === 'pong') {
+            const id = socket.id;
+            console.log('ponged');
+            const ping = Date.now() - signal.data;
+            pingMap.set(id, ping);
+            console.log('pingMap:');
+            pingMap.forEach((item) => {
+                console.log('\n\t' + item);
+            });
+            console.log('pingMap.size:\n\t' + pingMap.size);
         }
-        io.emit('signal', ev);
+        io.emit('signal', signal);
+    });
+    socket.on('disconnect', () => {
+        console.log('Deleting socket:\n\t' + socket.id);
+        pingMap.delete(socket.id);
     });
 });
 
-// function serveStatic(response: http.ServerResponse, cache: any, absPath: string) {
-//     if (cache[absPath]) {
-//         sendFile(response, absPath, cache[absPath]);
-//     } else {
-//         fs.exists(absPath, function (exists) {
-//             if (exists) {
-//                 fs.readFile(absPath, function (err, data) {
-//                     if (err) {
-//                         send404(response);
-//                     } else {
-//                         cache[absPath] = data;
-//                         sendFile(response, absPath, data);
-//                     }
-//                 });
-//             } else {
-//                 send404(response);
-//             }
-//         });
-//     }
-// }
-
-// function initServer(request: http.IncomingMessage, response: http.ServerResponse) {
-//     console.log(request.url);
-//     let filePath = '';
-
-//     if (request.url === '/api/getSounds') {
-//         response.writeHead(200, { 'Content-Type': 'application/json' });
-//         response.write(JSON.stringify(soundCache));
-//         response.end();
-//         return;
-//     } else if (request.url === '/') {
-//         filePath = './dist/index.html';
-//     } else {
-//         filePath = './dist/index.html';
-//     }
-//     const absPath = filePath;
-//     console.log(absPath);
-
-//     fs.exists(absPath, function (exists) {
-//         if (exists) {
-//             let stat;
-//             if (statCache[absPath]) {
-//                 stat = statCache[absPath];
-//             } else {
-//                 stat = fs.statSync(absPath);
-//                 statCache[absPath] = stat;
-//             }
-//             const total = stat.size;
-
-//             if (request.headers['range']) {
-//                 const range = request.headers.range;
-//                 const parts = range.replace(/bytes=/, '').split('-');
-//                 const partialstart = parts[0];
-//                 const partialend = parts[1];
-
-//                 const start = parseInt(partialstart, 10);
-//                 const end = partialend ? parseInt(partialend, 10) : total - 1;
-//                 const chunksize = (end - start) + 1;
-//                 console.log('RANGE: ' + start + ' - ' + end + ' = ' + chunksize);
-
-//                 const file = fs.createReadStream(absPath, { start: start, end: end });
-//                 response.writeHead(206, {
-//                     'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
-//                     'Accept-Ranges': 'bytes',
-//                     'Content-Length': chunksize,
-//                     'Content-Type': 'video/mp4'
-//                 });
-//                 file.pipe(response);
-//             } else {
-
-//                 fs.readFile(absPath, function (err, data) {
-//                     if (err) {
-//                         send404(response);
-//                     } else {
-//                         sendFile(response, absPath, data);
-//                     }
-//                 });
-//             }
-//         } else {
-//             send404(response);
-//         }
-//     });
-// };
-
-// server.listen(7777, () => {
-//     console.log('Server is listening on port 7777');
-// });
-
+const emitPing = () => {
+    console.log('pinging');
+    io.emit('signal', new Signal('ping', Date.now()));
+}

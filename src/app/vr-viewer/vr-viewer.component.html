@@ -1,0 +1,17 @@
+<a-scene embedded>
+  <a-assets>
+    <img id="sky" src="pictures/livingRoom.jpg">
+  </a-assets>
+  <a-video id="aVideo" src="#video" position="0 -170 -1500"></a-video>
+  <a-sky src="#sky" rotation="0 178 0"></a-sky>
+</a-scene>
+<app-watch hideVideo="true"></app-watch>
+<!--<div fxLayoutAlign="center center">
+  <div class="control controlRow" (click)="onMuteToggle()">
+    <div *ngIf="isMuted(); else muteElseBlock">
+      <i class="fa fa-volume-off" aria-hidden="true"></i>
+    </div>
+    <ng-template #muteElseBlock><i class="fa fa-volume-up" aria-hidden="true"></i></ng-template>
+  </div>
+</div>-->
+<!--<app-control [video]="video"></app-control>-->

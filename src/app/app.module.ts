@@ -26,10 +26,10 @@ import { FooterComponent } from './footer/footer.component';
     HeaderComponent,
     FooterComponent,
   ],
-  providers: [
+ providers: [
     WebsocketService,
     SoundService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

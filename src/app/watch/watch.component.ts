@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import * as io from 'socket.io-client';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 
 import { Signal } from '../../../server/signal';
 
@@ -11,9 +10,17 @@ import { SoundService } from '../sound.service';
   templateUrl: './watch.component.html',
   styleUrls: ['./watch.component.css']
 })
-export class WatchComponent implements OnInit, OnDestroy {
+export class WatchComponent implements OnInit, OnDestroy, Input {
+  private _hideVideo: boolean;
+  @Input()
+  set hideVideo(hideVideo: boolean) {
+    this._hideVideo = hideVideo;
+  }
+  get hideVideo(): boolean {
+    return this._hideVideo;
+  }
+
   connection;
-  playState;
   context: AudioContext;
   soundBuffers: AudioBuffer[];
   video: HTMLVideoElement;
@@ -70,11 +77,16 @@ export class WatchComponent implements OnInit, OnDestroy {
 
   handleSignal(signal: Signal) {
     if (signal.type === 'play') {
-      if (signal.data === 'playing') {
+      if (signal.data.state === 'playing') {
         this.video.play();
       } else {
         this.video.pause();
       }
+
+      if (signal.data.time) {
+        this.video.currentTime = signal.data.time;
+      }
+
     } else if (signal.type === 'skip') {
       const paused = this.video.paused;
       if (signal.data === 'forward') {

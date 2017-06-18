@@ -1,8 +1,13 @@
 <h1>Double Decker Couch</h1>
 <p align="center">So everyone can watch TV together and be buddies!</p>
-<br />
-<p>
-    <a routerLink="/control" routerLinkActive="active">Control</a>
-    |
-    <a routerLink="/watch" routerLinkActive="active">Watch</a>
-</p>
+<div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center center">
+    <div>
+        <a routerLink="/control" routerLinkActive="active">Control</a>
+    </div>
+    <div>
+        <a routerLink="/watch" routerLinkActive="active">Watch</a>
+    </div>
+    <div>
+        <a routerLink="/vr" routerLinkActive="active">VR Experience</a>
+    </div>
+</div>

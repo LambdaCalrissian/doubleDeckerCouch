@@ -1,3 +1,23 @@
 #video {
     width: 100%;
 }
+.control {
+    background-color: #e04038;
+    color: #fff;
+	text-align: center;
+	font-family: 'Source Sans Pro';
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 80px;
+	letter-spacing: -0.02em;
+
+    margin: 20px;
+	padding: 0px 20px;
+    border: 0px;
+
+	cursor: pointer;
+	user-select: none;
+}
+.controlRow {
+	width: 250px;
+}

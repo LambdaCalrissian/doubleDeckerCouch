@@ -1,5 +1,6 @@
 :host {
     background-color: #e04038;
+	padding-bottom: 40px;
 }
 
 h1 {
@@ -31,9 +32,14 @@ p {
 
 a {
 	color: #fff;
+	text-align: center;
 	font-family: 'Source Sans Pro';
+	font-size: 38px;
 	font-weight: 700;
+	line-height: 48px;
+	letter-spacing: -0.02em;
 	text-decoration: none;
+	margin: 0px 20px;
 }
 
 a.active {

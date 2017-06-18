@@ -21,11 +21,11 @@ export class WebsocketService {
   }
 
   getSignals() {
+    this.socket = io.connect();
     return new Observable(observer => {
-      this.socket = io.connect();
       this.socket.on('signal', (data: Signal) => {
         observer.next(data);
-      })
+      });
       return () => {
         this.socket.disconnect();
       };

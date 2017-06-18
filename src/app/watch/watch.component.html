@@ -1,3 +1,2 @@
-<video id="video" controls preload="auto" [muted]="isMobile()">
-  <source src="/videos/theWickerMan.mp4">
-</video>
+<video src="/videos/theWickerMan.mp4" id="video" preload="auto" playsinline webkit-playsinline [muted]="isMobile()" [hidden]="hideVideo"> </video>
+<app-control [video]="video"></app-control>
