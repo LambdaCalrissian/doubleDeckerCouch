@@ -47,6 +47,8 @@ export class ControlComponent implements OnInit, OnDestroy {
       this.playState = signal.data.state;
     } else if (signal.type === 'ping') {
       this.websocketService.sendSignal(new Signal('pong', signal.data));
+    } else if (signal.type === 'skip') {
+      this.playState = 'paused';
     }
   }
 

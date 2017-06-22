@@ -10,10 +10,33 @@
 
     margin: 20px;
 	padding: 0px 20px;
-    border: 0px;
 
 	cursor: pointer;
 	user-select: none;
+}
+
+.control:active {
+	animation-duration: .1s;
+	animation-name: growHorizontal;
+	animation-direction: alternate;
+}
+
+@keyframes growHorizontal {
+	from {
+		background-color: #e04038;
+		color: #fff;
+		border: 1px sollid #e04038;
+		margin: 0px 20px;
+	}
+
+
+	to {
+	background-color: #fff;
+	color: #e04038;
+	border: 1px sollid #e04038;
+	margin: 0px 40px;
+
+	}
 }
 
 .controlRow {

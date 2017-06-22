@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit, OnDestroy } from '@angular/core';
 import { HttpModule } from '@angular/http';
 
 import { Subject } from 'rxjs/Subject';
@@ -10,10 +10,18 @@ import 'rxjs/add/operator/toPromise';
 import { Signal } from '../../server/signal';
 
 @Injectable()
-export class WebsocketService {
-  private socket;
+export class WebsocketService implements OnInit, OnDestroy {
+  private socket: io.socket;
 
   constructor() {
+    this.socket = io();
+  }
+
+  ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this.socket.disconnect();
   }
 
   sendSignal(signal: Signal) {
@@ -21,13 +29,12 @@ export class WebsocketService {
   }
 
   getSignals() {
-    this.socket = io.connect();
     return new Observable(observer => {
       this.socket.on('signal', (data: Signal) => {
         observer.next(data);
       });
       return () => {
-        this.socket.disconnect();
+        // this.socket.disconnect();
       };
     })
   }

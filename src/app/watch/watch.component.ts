@@ -49,6 +49,10 @@ export class WatchComponent implements OnInit, OnDestroy, Input {
 
     // Grab the video element and set up callbacks for state change
     this.video = document.getElementById('video') as HTMLVideoElement;
+    this.video.addEventListener('canplaythrough', () => {
+      this.websocketService.sendSignal(new Signal('buffered', {}));
+    });
+    this.websocketService.sendSignal(new Signal('watching', true));
   }
 
   loadSound(url: string, context: AudioContext, callback: (buffer: AudioBuffer) => void) {
@@ -72,13 +76,14 @@ export class WatchComponent implements OnInit, OnDestroy, Input {
   }
 
   ngOnDestroy() {
-    this.connection.unsubscribe();
+    this.websocketService.sendSignal(new Signal('watching', false));
+    // this.connection.unsubscribe();
   }
 
   handleSignal(signal: Signal) {
     if (signal.type === 'play') {
       if (signal.data.state === 'playing') {
-        this.video.play();
+        setTimeout(() => this.video.play(), signal.data.delay);
       } else {
         this.video.pause();
       }
@@ -88,17 +93,18 @@ export class WatchComponent implements OnInit, OnDestroy, Input {
       }
 
     } else if (signal.type === 'skip') {
-      const paused = this.video.paused;
       if (signal.data === 'forward') {
         this.video.currentTime = this.video.currentTime + 30;
       } else if (signal.data === 'backward') {
         this.video.currentTime = this.video.currentTime - 10;
       }
-      if (paused) {
-        this.video.pause();
-      }
+      this.video.pause();
     } else if (signal.type === 'sound') {
       this.playSound(this.soundBuffers[+signal.data], this.context);
+    } else if (signal.type === 'pong') {
+      this.websocketService.sendSignal(new Signal('pong', signal.data));
+    } else if (signal.type === 'getTime') {
+      this.websocketService.sendSignal(new Signal('getTime', this.video.currentTime));
     }
   }
 
